@@ -1,0 +1,12 @@
+{
+	"name": "integral",
+	"authors": [
+		"burner"
+	],
+	"dependencies": {
+		"argsd": "~>0.4.1"
+	},
+	"description": "Symbolic Math",
+	"copyright": "Copyright © 2018, burner",
+	"license": "LGPL3"
+}
