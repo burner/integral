@@ -6,6 +6,7 @@
 	"dependencies": {
 		"argsd": "~>0.4.1"
 	},
+	"preBuildsCommands" : ["make"],
 	"description": "Symbolic Math",
 	"copyright": "Copyright © 2018, burner",
 	"license": "LGPL3"

@@ -1,46 +1,22 @@
 module lexer;
 
-enum TokenType {
-	empty,
-	number,
-	name,
-	pow,
-	lparen,
-	rparen,
-	lcurly,
-	under,
-	rcurly,
-	lbrack,
-	rbrack,
-	star,
-	div,
-	plus,
-	minus,
-	equal,
-	inte,
-	prod,
-	frac,
-}
-
-struct Token {
-	TokenType type;
-	string value;
-}
+import tokenmodule;
 
 class Lexer {
 	string input;
-	size_t col;
+	size_t column;
+	size_t line;
 	Token cur;
 
 	this(string input) {
 		this.input = input;
-		this.col = 0UL;
+		this.column = 0UL;
 		this.buildFront();
 	}
 
 	private bool isTokenStop() const {
-		return this.col >= this.input.length 
-			|| this.isTokenStop(this.input[this.col]);
+		return this.column >= this.input.length 
+			|| this.isTokenStop(this.input[this.column]);
 	}
 
 	private bool isTokenStop(const(char) c) const {
@@ -53,75 +29,75 @@ class Lexer {
 
 	private void eatWhitespace() {
 		import std.ascii : isWhite;
-		while(this.col < this.input.length) {
-			if(this.input[this.col] == ' ') {
-				++this.col;
-			} else if(this.input[this.col] == '\t') {
-				++this.col;
+		while(this.column < this.input.length) {
+			if(this.input[this.column] == ' ') {
+				++this.column;
+			} else if(this.input[this.column] == '\t') {
+				++this.column;
 			} else {
 				break;
 			}
-			++this.col;
 		}
 	}
 
 	@property bool empty() const {
-		return this.col == this.input.length 
+		return this.column == this.input.length 
 			&& this.cur.type == TokenType.empty;
 	}
 	
 	void buildFront() {
 		import std.ascii : isAlpha, isDigit;
-		size_t startPos = this.col;
-		if(this.col >= this.input.length) {
+		this.eatWhitespace();
+		size_t startPos = this.column;
+		if(this.column >= this.input.length) {
 			this.cur = Token(TokenType.empty, "");
 			return;
 		}
-		switch(this.input[this.col]) {
+		switch(this.input[this.column]) {
 			case '0': .. case '9':
 				do {
-					++this.col;
-				} while(this.col < this.input.length &&
-						isDigit(this.input[this.col]));
+					++this.column;
+				} while(this.column < this.input.length &&
+						isDigit(this.input[this.column]));
 				
-				if(this.col >= this.input.length
-						|| this.input[this.col] != '.') 
+				if(this.column >= this.input.length
+						|| this.input[this.column] != '.') 
 				{
 					this.cur = Token(TokenType.number, 
-							this.input[startPos ..  this.col]
+							this.input[startPos ..  this.column]
 						);
 					return;
-				} else if(this.col < this.input.length
-						&& this.input[this.col] == '.')
+				} else if(this.column < this.input.length
+						&& this.input[this.column] == '.')
 				{
 					do {
-						++this.col;
-					} while(this.col < this.input.length &&
-							isDigit(this.input[this.col]));
+						++this.column;
+					} while(this.column < this.input.length &&
+							isDigit(this.input[this.column]));
 
 					this.cur = Token(TokenType.number,
-							this.input[startPos ..  this.col]
+							this.input[startPos ..  this.column]
 						);
 					return;
 				}
 				goto default;
 			case 'a': .. case 'z': case 'A': .. case 'Z':
 				do {
-					++col;
-				} while(this.col < this.input.length && 
-						isAlpha(this.input[this.col])
+					++this.column;
+				} while(this.column < this.input.length && 
+						isAlpha(this.input[this.column])
 					);
 				this.cur = Token(TokenType.name, 
-						this.input[startPos ..  this.col]
+						this.input[startPos ..  this.column]
 					);
 				return;
 			case '\\':
 				do {
-					++this.col;
-				} while(this.col < this.input.length && 
-						isAlpha(this.input[this.col])
+					++this.column;
+				} while(this.column < this.input.length && 
+						isAlpha(this.input[this.column])
 					);
-				string s = this.input[startPos .. this.col];
+				string s = this.input[startPos .. this.column];
 				if(s == "\\int") {
 					this.cur = Token(TokenType.inte, "");
 					return;
@@ -134,51 +110,59 @@ class Lexer {
 				}
 				assert(false, s);
 			case '^':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.pow, "");
 				return;
+			case ',':
+				++this.column;
+				this.cur = Token(TokenType.comma, "");
+				return;
+			case '%':
+				++this.column;
+				this.cur = Token(TokenType.mod, "");
+				return;
 			case '_':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.under, "");
 				return;
 			case '/':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.div, "");
 				return;
 			case '{':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.lcurly, "");
 				return;
 			case '}':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.rcurly, "");
 				return;
 			case '[':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.lbrack, "");
 				return;
 			case ']':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.rbrack, "");
 				return;
 			case '(':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.lparen, "");
 				return;
 			case ')':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.rparen, "");
 				return;
 			case '*':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.star, "");
 				return;
 			case '+':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.plus, "");
 				return;
 			case '=':
-				++this.col;
+				++this.column;
 				this.cur = Token(TokenType.equal, "");
 				return;
 			default:
@@ -187,7 +171,7 @@ class Lexer {
 		}
 	}
 
-	@property Token front() {
+	@property Token front() const {
 		return this.cur;
 	}
 
@@ -255,6 +239,21 @@ unittest {
 	auto t = l.front;
 	assert(t.type == TokenType.number);
 	assert(t.value == "123.79", t.value);
+	l.popFront();
+	assert(!l.empty);
+	t = l.front;
+	assert(t.type == TokenType.name);
+	assert(t.value == "hello", t.value);
+	l.popFront();
+	assert(l.empty);
+}
+
+unittest {
+	auto l = new Lexer("12379hello");
+	assert(!l.empty);
+	auto t = l.front;
+	assert(t.type == TokenType.number);
+	assert(t.value == "12379", t.value);
 	l.popFront();
 	assert(!l.empty);
 	t = l.front;
