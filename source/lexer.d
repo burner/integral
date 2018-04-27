@@ -104,8 +104,14 @@ class Lexer {
 				} else if(s == "\\prod") {
 					this.cur = Token(TokenType.prod, "");
 					return;
+				} else if(s == "\\sum") {
+					this.cur = Token(TokenType.sum, "");
+					return;
 				} else if(s == "\\frac") {
 					this.cur = Token(TokenType.frac, "");
+					return;
+				} else if(s == "\\infty") {
+					this.cur = Token(TokenType.infty, "");
 					return;
 				}
 				assert(false, s);

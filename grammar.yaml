@@ -15,12 +15,17 @@ MulDiv:
 Factor:
     Num: [number#num]
     Name: [name#name]
+    Infty: [infty]
     Expr: [lparen, Expr#expr, rparen]
     Frac: [frac, lcurly, Expr#numerator, rcurly, lcurly, Expr#denominator, rcurly]  
     FracExpr: [frac, lcurly, Expr#numerator, rcurly, lcurly, Expr#denominator, rcurly, Expr#expr]  
     Fun: [name#name, lparen, Params#params, rparen]
     Prod: [prod, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly]  
     ProdExpr: [prod, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly, Expr#expr]  
+    Sum: [sum, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly]  
+    SumExpr: [sum, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly, Expr#expr]  
+    Int: [inte, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly]  
+    IntExpr: [inte, under, lcurly, Math#from, rcurly, pow, lcurly, Expr#denominator, rcurly, Expr#expr]  
 
 Params:
     Param: [Expr#param]
